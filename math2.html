@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7th Grade Word Math Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #444;
+            margin-top: 20px;
+        }
+
+        .quiz-container {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 10px 0;
+        }
+
+        .options label {
+            cursor: pointer;
+        }
+
+        .btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #218838;
+        }
+
+        .result {
+            font-size: 20px;
+            margin-top: 20px;
+            color: #007bff;
+        }
+
+        .timer {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <h1>7th Grade Word Math Quiz</h1>
+    <div class="quiz-container">
+        <div id="timer" class="timer">Time: 0:00</div>
+        <div id="quiz">
+            <!-- Questions will be injected here by JavaScript -->
+        </div>
+        <button class="btn" onclick="submitQuiz()">Submit</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "A car travels 60 miles in 1 hour. How far will it travel in 3 hours?",
+                options: ["120 miles", "180 miles", "200 miles", "150 miles"],
+                correct: 1
+            },
+            {
+                question: "If a pizza is divided into 8 equal slices and you eat 3, what fraction of the pizza is left?",
+                options: ["5/8", "3/8", "1/2", "2/3"],
+                correct: 0
+            },
+            {
+                question: "A rectangle has a length of 10 cm and a width of 5 cm. What is its area?",
+                options: ["50 cm²", "25 cm²", "30 cm²", "40 cm²"],
+                correct: 0
+            },
+            {
+                question: "A train leaves the station at 3 PM traveling at 50 mph. How far will it have traveled by 5 PM?",
+                options: ["50 miles", "100 miles", "200 miles", "150 miles"],
+                correct: 1
+            },
+            {
+                question: "If you have 3 apples and you buy 4 more, how many apples do you have in total?",
+                options: ["6", "7", "5", "8"],
+                correct: 1
+            },
+            {
+                question: "What is the perimeter of a square with a side length of 4 cm?",
+                options: ["16 cm", "12 cm", "8 cm", "20 cm"],
+                correct: 0
+            },
+            {
+                question: "If a bottle holds 2 liters of water, how many liters will 4 bottles hold?",
+                options: ["6 liters", "8 liters", "10 liters", "12 liters"],
+                correct: 1
+            },
+            {
+                question: "A farmer has 20 cows. If 5 cows escape, how many are left?",
+                options: ["10", "15", "5", "20"],
+                correct: 1
+            },
+            {
+                question: "What is the average of the numbers 2, 4, 6, and 8?",
+                options: ["5", "6", "4", "7"],
+                correct: 1
+            },
+            {
+                question: "If a book costs $5, how much will 3 books cost?",
+                options: ["$10", "$15", "$20", "$25"],
+                correct: 1
+            }
+        ];
+
+        const quizContainer = document.getElementById("quiz");
+        const resultContainer = document.getElementById("result");
+        const timerElement = document.getElementById("timer");
+
+        let startTime;
+        let timerInterval;
+
+        function loadQuiz() {
+            quizData.forEach((item, index) => {
+                const questionElement = document.createElement("div");
+                questionElement.className = "question";
+                questionElement.innerHTML = `<strong>${index + 1}. ${item.question}</strong>`;
+
+                const optionsList = document.createElement("ul");
+                optionsList.className = "options";
+
+                item.options.forEach((option, optionIndex) => {
+                    const optionItem = document.createElement("li");
+                    optionItem.innerHTML = `
+                        <label>
+                            <input type="radio" name="question${index}" value="${optionIndex}">
+                            ${option}
+                        </label>
+                    `;
+                    optionsList.appendChild(optionItem);
+                });
+
+                questionElement.appendChild(optionsList);
+                quizContainer.appendChild(questionElement);
+            });
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsedTime / 60);
+                const seconds = elapsedTime % 60;
+                timerElement.textContent = `Time: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = elapsedTime % 60;
+            return `${minutes} minutes and ${seconds} seconds`;
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            let score = 0;
+
+            quizData.forEach((item, index) => {
+                const selectedOption = document.querySelector(
+                    `input[name="question${index}"]:checked`
+                );
+
+                if (selectedOption && parseInt(selectedOption.value) === item.correct) {
+                    score++;
+                }
+            });
+
+            const totalTime = stopTimer();
+            resultContainer.textContent = `You scored ${score} out of ${quizData.length} in ${totalTime}!`;
+        }
+
+        loadQuiz();
+        startTimer();
+    </script>
+</body>
+</html>

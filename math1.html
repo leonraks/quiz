@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7th Grade Word Math Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #444;
+            margin-top: 20px;
+        }
+
+        .quiz-container {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 10px 0;
+        }
+
+        .options label {
+            cursor: pointer;
+        }
+
+        .btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #218838;
+        }
+
+        .result {
+            font-size: 20px;
+            margin-top: 20px;
+            color: #007bff;
+        }
+
+        .timer {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <h1>7th Grade Word Math Quiz</h1>
+    <div class="quiz-container">
+        <div id="timer" class="timer">Time: 0:00</div>
+        <div id="quiz">
+            <!-- Questions will be injected here by JavaScript -->
+        </div>
+        <button class="btn" onclick="submitQuiz()">Submit</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "A baker bakes 240 cookies in 8 hours. How many cookies does the baker bake per hour?",
+                options: ["30", "40", "20", "25"],
+                correct: 0
+            },
+            {
+                question: "If a car uses 15 liters of fuel to travel 300 kilometers, how many kilometers can it travel per liter?",
+                options: ["15 km", "20 km", "25 km", "30 km"],
+                correct: 1
+            },
+            {
+                question: "A school has 500 students. If 60% of them are boys, how many boys are there?",
+                options: ["200", "250", "300", "350"],
+                correct: 2
+            },
+            {
+                question: "A box contains 120 candies divided equally into 6 packets. How many candies are in each packet?",
+                options: ["15", "20", "25", "30"],
+                correct: 1
+            },
+            {
+                question: "If a train travels 90 kilometers in 2 hours, what is its speed in kilometers per hour?",
+                options: ["45 km/h", "50 km/h", "60 km/h", "30 km/h"],
+                correct: 0
+            },
+            {
+                question: "A shop sells 4 pencils for $2. How much does each pencil cost?",
+                options: ["$0.50", "$1", "$1.50", "$0.75"],
+                correct: 0
+            },
+            {
+                question: "A farmer has 120 chickens. If 25% of them are sold, how many chickens are left?",
+                options: ["90", "80", "70", "60"],
+                correct: 0
+            },
+            {
+                question: "A tank holds 500 liters of water. If 2/5 of the tank is full, how many liters of water are in the tank?",
+                options: ["100 liters", "150 liters", "200 liters", "250 liters"],
+                correct: 3
+            },
+            {
+                question: "If a worker earns $400 in 5 days, how much does the worker earn per day?",
+                options: ["$70", "$80", "$90", "$100"],
+                correct: 1
+            },
+            {
+                question: "A classroom has 40 students. If 3/4 of them pass an exam, how many students passed?",
+                options: ["20", "30", "25", "35"],
+                correct: 1
+            }
+        ];
+
+        const quizContainer = document.getElementById("quiz");
+        const resultContainer = document.getElementById("result");
+        const timerElement = document.getElementById("timer");
+
+        let startTime;
+        let timerInterval;
+
+        function loadQuiz() {
+            quizData.forEach((item, index) => {
+                const questionElement = document.createElement("div");
+                questionElement.className = "question";
+                questionElement.innerHTML = `<strong>${index + 1}. ${item.question}</strong>`;
+
+                const optionsList = document.createElement("ul");
+                optionsList.className = "options";
+
+                item.options.forEach((option, optionIndex) => {
+                    const optionItem = document.createElement("li");
+                    optionItem.innerHTML = `
+                        <label>
+                            <input type="radio" name="question${index}" value="${optionIndex}">
+                            ${option}
+                        </label>
+                    `;
+                    optionsList.appendChild(optionItem);
+                });
+
+                questionElement.appendChild(optionsList);
+                quizContainer.appendChild(questionElement);
+            });
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsedTime / 60);
+                const seconds = elapsedTime % 60;
+                timerElement.textContent = `Time: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = elapsedTime % 60;
+            return `${minutes} minutes and ${seconds} seconds`;
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            let score = 0;
+
+            quizData.forEach((item, index) => {
+                const selectedOption = document.querySelector(
+                    `input[name="question${index}"]:checked`
+                );
+
+                if (selectedOption && parseInt(selectedOption.value) === item.correct) {
+                    score++;
+                }
+            });
+
+            const totalTime = stopTimer();
+            resultContainer.textContent = `You scored ${score} out of ${quizData.length} in ${totalTime}!`;
+        }
+
+        loadQuiz();
+        startTimer();
+    </script>
+</body>
+</html>
