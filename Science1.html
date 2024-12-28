@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6th Grade Science Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+
+        .quiz-container {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 10px 0;
+        }
+
+        .options label {
+            cursor: pointer;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            font-size: 20px;
+            margin-top: 20px;
+            color: #28a745;
+        }
+
+        .timer {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+    <h1>6th Grade Science Quiz</h1>
+    <div class="quiz-container">
+        <div id="timer" class="timer">Time: 0:00</div>
+        <div id="quiz">
+            <!-- Questions will be injected here by JavaScript -->
+        </div>
+        <button class="btn" onclick="submitQuiz()">Submit</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "What is the process by which plants make their own food?",
+                options: [
+                    "Respiration",
+                    "Photosynthesis",
+                    "Transpiration",
+                    "Digestion"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is the center of an atom called?",
+                options: ["Electron", "Proton", "Nucleus", "Neutron"],
+                correct: 2
+            },
+            {
+                question: "Which planet is known as the Red Planet?",
+                options: ["Earth", "Mars", "Venus", "Jupiter"],
+                correct: 1
+            },
+            {
+                question: "What do we call animals that eat only plants?",
+                options: ["Carnivores", "Herbivores", "Omnivores", "Insectivores"],
+                correct: 1
+            },
+            {
+                question: "What gas do humans exhale?",
+                options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
+                correct: 1
+            },
+            {
+                question: "What force keeps us on the ground?",
+                options: ["Magnetism", "Friction", "Gravity", "Electricity"],
+                correct: 2
+            },
+            {
+                question: "Which part of the plant absorbs water?",
+                options: ["Leaves", "Flowers", "Roots", "Stem"],
+                correct: 2
+            },
+            {
+                question: "What is the boiling point of water at sea level?",
+                options: ["100°C", "90°C", "110°C", "120°C"],
+                correct: 0
+            },
+            {
+                question: "What is the largest organ in the human body?",
+                options: ["Heart", "Skin", "Liver", "Lungs"],
+                correct: 1
+            },
+            {
+                question: "What do we call a scientist who studies rocks?",
+                options: ["Biologist", "Geologist", "Chemist", "Astronomer"],
+                correct: 1
+            }
+        ];
+
+        const quizContainer = document.getElementById("quiz");
+        const resultContainer = document.getElementById("result");
+        const timerElement = document.getElementById("timer");
+
+        let startTime;
+        let timerInterval;
+
+        function loadQuiz() {
+            quizData.forEach((item, index) => {
+                const questionElement = document.createElement("div");
+                questionElement.className = "question";
+                questionElement.innerHTML = `<strong>${index + 1}. ${item.question}</strong>`;
+
+                const optionsList = document.createElement("ul");
+                optionsList.className = "options";
+
+                item.options.forEach((option, optionIndex) => {
+                    const optionItem = document.createElement("li");
+                    optionItem.innerHTML = `
+                        <label>
+                            <input type="radio" name="question${index}" value="${optionIndex}">
+                            ${option}
+                        </label>
+                    `;
+                    optionsList.appendChild(optionItem);
+                });
+
+                questionElement.appendChild(optionsList);
+                quizContainer.appendChild(questionElement);
+            });
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsedTime / 60);
+                const seconds = elapsedTime % 60;
+                timerElement.textContent = `Time: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = elapsedTime % 60;
+            return `${minutes} minutes and ${seconds} seconds`;
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            let score = 0;
+
+            quizData.forEach((item, index) => {
+                const selectedOption = document.querySelector(
+                    `input[name="question${index}"]:checked`
+                );
+
+                if (selectedOption && parseInt(selectedOption.value) === item.correct) {
+                    score++;
+                }
+            });
+
+            const totalTime = stopTimer();
+            resultContainer.textContent = `You scored ${score} out of ${quizData.length} in ${totalTime}!`;
+        }
+
+        loadQuiz();
+        startTimer();
+    </script>
+</body>
+</html>
