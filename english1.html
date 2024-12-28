@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7th Grade Word English Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+
+        .quiz-container {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 10px 0;
+        }
+
+        .options label {
+            cursor: pointer;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            font-size: 20px;
+            margin-top: 20px;
+            color: #28a745;
+        }
+
+        .timer {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+    <h1>7th Grade Word English Quiz</h1>
+    <div class="quiz-container">
+        <div id="timer" class="timer">Time: 0:00</div>
+        <div id="quiz">
+            <!-- Questions will be injected here by JavaScript -->
+        </div>
+        <button class="btn" onclick="submitQuiz()">Submit</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Choose the correct sentence: ",
+                options: [
+                    "She don't like apples.",
+                    "She doesn't likes apples.",
+                    "She doesn't like apples.",
+                    "She do not likes apples."
+                ],
+                correct: 2
+            },
+            {
+                question: "Which word is a synonym for 'happy'?",
+                options: ["Sad", "Joyful", "Angry", "Tired"],
+                correct: 1
+            },
+            {
+                question: "Identify the adjective in this sentence: 'The quick brown fox jumps over the lazy dog.'",
+                options: ["fox", "jumps", "quick", "over"],
+                correct: 2
+            },
+            {
+                question: "What is the past tense of the verb 'run'?",
+                options: ["Run", "Running", "Ran", "Runned"],
+                correct: 2
+            },
+            {
+                question: "Which of the following is a compound word?",
+                options: ["Snowflake", "Table", "Book", "Run"],
+                correct: 0
+            },
+            {
+                question: "Choose the correct form of the verb: 'He ___ to school every day.'",
+                options: ["go", "goes", "going", "gone"],
+                correct: 1
+            },
+            {
+                question: "What is the plural form of 'mouse'?",
+                options: ["Mouses", "Mouse", "Mice", "Mices"],
+                correct: 2
+            },
+            {
+                question: "Which sentence is written in the passive voice?",
+                options: [
+                    "The cat chased the mouse.",
+                    "The mouse was chased by the cat.",
+                    "The cat is chasing the mouse.",
+                    "The mouse chases the cat."
+                ],
+                correct: 1
+            },
+            {
+                question: "What is the main verb in this sentence: 'She is reading a book.'",
+                options: ["She", "is", "reading", "book"],
+                correct: 2
+            },
+            {
+                question: "Which word is an example of an interjection?",
+                options: ["Wow", "Quick", "Run", "Happy"],
+                correct: 0
+            }
+        ];
+
+        const quizContainer = document.getElementById("quiz");
+        const resultContainer = document.getElementById("result");
+        const timerElement = document.getElementById("timer");
+
+        let startTime;
+        let timerInterval;
+
+        function loadQuiz() {
+            quizData.forEach((item, index) => {
+                const questionElement = document.createElement("div");
+                questionElement.className = "question";
+                questionElement.innerHTML = `<strong>${index + 1}. ${item.question}</strong>`;
+
+                const optionsList = document.createElement("ul");
+                optionsList.className = "options";
+
+                item.options.forEach((option, optionIndex) => {
+                    const optionItem = document.createElement("li");
+                    optionItem.innerHTML = `
+                        <label>
+                            <input type="radio" name="question${index}" value="${optionIndex}">
+                            ${option}
+                        </label>
+                    `;
+                    optionsList.appendChild(optionItem);
+                });
+
+                questionElement.appendChild(optionsList);
+                quizContainer.appendChild(questionElement);
+            });
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsedTime / 60);
+                const seconds = elapsedTime % 60;
+                timerElement.textContent = `Time: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = elapsedTime % 60;
+            return `${minutes} minutes and ${seconds} seconds`;
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            let score = 0;
+
+            quizData.forEach((item, index) => {
+                const selectedOption = document.querySelector(
+                    `input[name="question${index}"]:checked`
+                );
+
+                if (selectedOption && parseInt(selectedOption.value) === item.correct) {
+                    score++;
+                }
+            });
+
+            const totalTime = stopTimer();
+            resultContainer.textContent = `You scored ${score} out of ${quizData.length} in ${totalTime}!`;
+        }
+
+        loadQuiz();
+        startTimer();
+    </script>
+</body>
+</html>
